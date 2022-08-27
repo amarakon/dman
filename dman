@@ -1,0 +1,33 @@
+#!/bin/sh
+
+progname=$(basename $0)
+
+directory=/tmp/$progname
+cleanup() { rm -rf $directory; }
+trap cleanup EXIT
+
+[ ! -d "$directory" ] && mkdir $directory
+title="$(apropos . | dmenu -l 10 | cut -d " " -f 1-2 | tr -d " ")"
+[ "$title" = "" ] && exit 1
+
+files="$(for i in $title; do
+	file="$directory/$i – $(printf '%s' "$i" | xargs -r man | head -1 |
+		tr -s " " | cut -d " " -f 2- | rev | cut -d " " -f 2- | rev |
+		# Straight apostrophes with non-whitespace characters surrounding them:
+		# https://unix.stackexchange.com/a/713841/513913
+		sed -e :1 -e "s/\([^[:space:]]\)'\([^[:space:]]\)/\1’\2/g" -e t1 |
+		sed "s/'/‘/ ; s/'/’/")"
+
+	printf '%s' "$i" | xargs -r man -Tpdf > "$file"
+	[ -s "$file" ] && printf '%s\n' "$file"
+done)"
+
+if [ -z "$READER" ]; then
+	if [ ! -x "$(command -v xdg-mime)" ]; then
+		printf "$progname: %s\n" '`$READER` is not set and xdg-utils is not installed.' >&2
+		exit 1
+	fi
+	READER="$(xdg-mime query default application/pdf | sed s/\.desktop$//)"
+fi
+
+printf '%s' "$files" | sed -e "s|'|'\\\\''|g ; s|\(.*\)|'\1'|" | xargs $READER
