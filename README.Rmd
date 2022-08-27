@@ -16,6 +16,10 @@ professional.
 
 Simply invoke the command `dman`.
 
+# Dependencies
+
+- dmenu
+
 # Installation
 
 ## Universal

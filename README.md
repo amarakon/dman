@@ -5,6 +5,7 @@ dman – dmenu man
 
 -   [Introduction](#introduction)
 -   [Usage](#usage)
+-   [Dependencies](#dependencies)
 -   [Installation](#installation)
     -   [Universal](#universal)
     -   [Gentoo](#gentoo)
@@ -23,6 +24,10 @@ because they are more professional.
 ## Usage
 
 Simply invoke the command `dman`.
+
+## Dependencies
+
+-   dmenu
 
 ## Installation
 
